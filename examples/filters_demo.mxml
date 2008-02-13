@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
+  layout="absolute" 
+  color="#000" 
+  themeColor="#FFFFFF"
+  styleName="plain"
+  creationComplete="init();">
+
+  <mx:Script> <![CDATA[
+    import flash.display.*;
+    import flash.filters.*;
+    import flash.media.Camera;
+    import as3.Filter;
+    import mx.controls.*;
+    import zerobug.Console;
+    import mx.core.*;
+
+    private var camera:Camera;
+    private var fps:int = 18;
+    private var console:Console;
+    private const VIDEO_WIDTH:int = 150,
+                  VIDEO_HEIGHT:int = 150;
+
+    private function setupVideo():void
+    {
+        bulge_video.width = dent_video.width = twirl_video.width = VIDEO_WIDTH;
+        squeeze_video.width = video.width = mirror_video.width = VIDEO_WIDTH;
+        tunnel_video.width = fisheye_video.width = pullout_video.width = VIDEO_WIDTH;
+        bulge_video.height = dent_video.height = twirl_video.height = VIDEO_HEIGHT;
+        squeeze_video.height = video.height = mirror_video.height = VIDEO_HEIGHT;
+        tunnel_video.height = fisheye_video.height = pullout_video.height = VIDEO_HEIGHT;
+    }
+
+    public function init():void
+    {
+      // setup camera
+      if(connectCamera()) {
+      //debug
+      console = new Console();
+        // Setup video
+        setupVideo();
+        video.attachCamera(camera); 
+
+        setInterval((function():Function {
+          // setup filters
+          var width:int = video.width;
+          var height:int = video.height;
+          var bmd:BitmapData = new BitmapData(width, height, true);
+          var region:Rectangle = new Rectangle(30, 30, 90, 90);
+          var bulgeFilter:DisplacementMapFilter = Filter.bulgeFilter(bmd, region);
+          var twirlFilter:DisplacementMapFilter = Filter.twirlFilter(bmd, region);
+          var squeezeFilter:DisplacementMapFilter = Filter.squeezeFilter(bmd, region);
+          var pinchFilter:DisplacementMapFilter = Filter.pinchFilter(bmd, region);
+          //var filter:DisplacementMapFilter = twirlFiter(bmd, region);
+ 
+          return function():void {
+            // original
+            bmd.draw(video);
+
+            // bulge effect
+            var bulgeBmd:BitmapData = new BitmapData(width, height, false);
+            bulgeBmd.applyFilter(bmd, bmd.rect, new Point(0, 0), bulgeFilter);
+            bulge_video.addChild(new Bitmap(bulgeBmd));
+
+            // twirl effect
+            var twirlBmd:BitmapData = new BitmapData(width, height, false);
+            twirlBmd.applyFilter(bmd, bmd.rect, new Point(0, 0), twirlFilter);
+            twirl_video.addChild(new Bitmap(twirlBmd));
+
+            // squeeze effect
+            var squeezeBmd:BitmapData = new BitmapData(width, height, false);
+            squeezeBmd.applyFilter(bmd, bmd.rect, new Point(0, 0), squeezeFilter);
+            squeeze_video.addChild(new Bitmap(squeezeBmd));
+
+            // pinch effect
+            var pinchBmd:BitmapData = new BitmapData(width, height, false);
+            pinchBmd.applyFilter(bmd, bmd.rect, new Point(0, 0), pinchFilter);
+            squeeze_video.addChild(new Bitmap(pinchBmd));
+
+            // mirror effect. 
+            // NOTE: A little tricky because return BitmapData object directly.
+            mirror_video.addChild(new Bitmap(Filter.mirror(bmd)));
+          };
+        })(), 1000 / fps);
+      }
+    }
+    // {{{
+    private function rotate(source:BitmapData):BitmapData
+    {
+      var width:int = source.width;
+      var height:int = source.height;
+      var matrix:Matrix = new Matrix();
+      var rotation:Number = Math.PI / 2;
+      var dx:int = Math.floor(width / 2);
+      var dy:int = Math.floor(height / 2);
+      matrix.rotate(rotation);
+      matrix.translate(width, 0);
+      var bmd:BitmapData = new BitmapData(width, height, false);
+      bmd.draw(source, matrix);
+
+      return bmd; 
+    }
+    // }}}
+
+    private function connectCamera():Boolean
+    {
+      camera = Camera.getCamera(); 
+      if(camera) {
+        camera.setMode(VIDEO_WIDTH, VIDEO_HEIGHT, fps); 
+        return true;
+      } else {
+        return false;  
+      }
+    }
+  ]]></mx:Script>
+  <mx:VBox>
+    <mx:Label text="AS3 Photo Booth. Some effects not implemented yet." fontSize="16"/>
+    <mx:HBox>
+      <mx:VideoDisplay id="bulge_video"/>
+      <mx:VideoDisplay id="dent_video"/>
+      <mx:VideoDisplay id="twirl_video"/>
+    </mx:HBox>
+    <mx:HBox>
+      <mx:VideoDisplay id="squeeze_video"/>
+      <mx:VideoDisplay id="video"/>
+      <mx:VideoDisplay id="mirror_video"/>
+    </mx:HBox>
+    <mx:HBox>
+      <mx:VideoDisplay id="tunnel_video"/>
+      <mx:VideoDisplay id="fisheye_video"/>
+      <mx:VideoDisplay id="pullout_video"/>
+    </mx:HBox>
+  </mx:VBox>
+</mx:Application>

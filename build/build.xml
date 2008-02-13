@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<project name="as3filter" basedir="../" default="lib">
+
+  <!-- Define variables/paths used in this build script -->
+  <property environment="env"/>
+  <property file="./build/build.properties" />
+
+  <!--
+    Have you edit the properties file to make sure the paths are right oo your system?
+  -->
+  <target name="properties">
+    <fail unless="asdoc">The "asdoe" property must be set in ${build.dir}/build.properties.</fail>
+    <fail unless="compc">The "compc" property must be set in ${build.dir}/build.properties.</fail>
+    <fail unless="mxmlc">The "mxmlc" property must be set in ${build.dir}/build.properties.</fail>
+  </target>
+  
+  <!--
+    Compile all of the classes under the "src" tree into a .swc file
+  -->
+  <target name="lib" depends="properties">
+    <exec executable="${compc}" dir="${basedir}">
+      <!-- Specify the name of the output file -->
+      <arg line="-o '${bin.dir}/${library.name}.swc'" />
+      
+      <!-- Specify the main source path as "src" -->
+      <arg line="-sp ${src.dir}" />
+      
+      <!-- Include all of the classes in the "src" tree -->
+      <arg line="-is ${src.dir}" />
+
+      <!-- Include depend libraries -->
+      <arg line="-compiler.library-path ${libs.dir}"/>
+    </exec>
+  </target>
+
+  <!--
+    Compile all of the examples
+  -->
+  <target name="example" depends="properties">
+    <exec executable="${mxmlc}" dir="${basedir}">
+      <!-- Include depend libraries -->
+      <arg line="-compiler.include-libraries ${bin.dir}/as3filters.swc"/>
+
+      <!-- Specify an output dir -->
+      <arg line="-o ${bin.dir}/filters_demo.swf"/>
+
+      <!-- Target -->
+      <arg line="${example.dir}/filters_demo.mxml"/>
+    </exec>
+  </target>
+  
+  <!--
+    Generate ASDoc output for the library
+  -->
+  <target name="docs" depends="properties">
+    <!-- Clean out the contents of the doc directory, without delete "docs" -->
+    <!--
+    <delete includeemptydirs="true">
+      <fileset dir="${docs.dir}" includes="**/*" />
+    </delete>
+    -->
+    
+    <exec executable="${asdoc}" spawn="no">
+      <!-- Place the documentation in the "docs" directory -->
+      <arg line="-o ${docs.dir}" />
+      
+      <!-- Specify the main source path as "src" -->
+      <arg line="-sp ${src.dir}" />
+      
+      <!-- Document all of the classes in the "src" tree -->
+      <arg line="-ds ${src.dir} " />
+      
+      <!-- Include the library name in the window title -->
+      <arg line="-window-title 'Adobe ActionScript 3.0 Library - ${library.name}' "/>
+    </exec>
+  </target>
+
+</project>
