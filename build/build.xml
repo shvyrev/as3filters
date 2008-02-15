@@ -28,8 +28,6 @@
       <!-- Include all of the classes in the "src" tree -->
       <arg line="-is ${src.dir}" />
 
-      <!-- Include depend libraries -->
-      <arg line="-compiler.library-path ${libs.dir}"/>
     </exec>
   </target>
 
