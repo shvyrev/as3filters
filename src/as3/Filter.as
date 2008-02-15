@@ -74,7 +74,7 @@ package as3 {
      *   
      *   var bmd = new BitmapData(video.width, video.height, false);
      *   bmd.draw(video);
-     *   var mirroredBmd = Effect.mirror(bmd);
+     *   var mirroredBmd = Filter.mirror(bmd);
      *
      * @params source BitmapData  The input bitmap data to apply the mirror effect.
      * @params region Rectangle   The region to apply the twirling effect. Default is entire region.
@@ -101,7 +101,7 @@ package as3 {
      * You can apply the filter is as follows:
      *
      *    var bmd:BitmapData = new BitmapData(width, height, false);
-     *    var filter:DisplacementMapFilter = Effect.pinchFilter(bmd);
+     *    var filter:DisplacementMapFilter = Filter.pinchFilter(bmd);
      *    bmd.draw(video);
      *    bmd.applyFilter(bmd, bmd.rect, new Point(0, 0), filter);
      *
@@ -109,7 +109,7 @@ package as3 {
      *
      *    var region:Rectangle = new Rectangle(100, 100, 100, 100); 
      *    var amount:Number = 0.5;
-     *    var filter:DisplacementMapFilter = Effect.pinchFilter(bmd, rect, amount);
+     *    var filter:DisplacementMapFilter = Filter.pinchFilter(bmd, rect, amount);
      * 
      * @params source     BitmapData  The input bitmap data to apply the twirling effect.
      * @params region     Rectangle   The region to apply the twirling effect.
@@ -157,7 +157,7 @@ package as3 {
      * You can apply the filter is as follows:
      *
      *    var bmd:BitmapData = new BitmapData(width, height, false);
-     *    var filter:DisplacementMapFilter = Effect.pinchFilter(bmd);
+     *    var filter:DisplacementMapFilter = Filter.pinchFilter(bmd);
      *    bmd.draw(video);
      *    bmd.applyFilter(bmd, bmd.rect, new Point(0, 0), filter);
      *
