@@ -12,12 +12,10 @@
     import flash.media.Camera;
     import as3.Filter;
     import mx.controls.*;
-    import zerobug.Console;
     import mx.core.*;
 
     private var camera:Camera;
     private var fps:int = 18;
-    private var console:Console;
     private const VIDEO_WIDTH:int = 150,
                   VIDEO_HEIGHT:int = 150;
 
@@ -25,18 +23,16 @@
     {
         bulge_video.width = dent_video.width = twirl_video.width = VIDEO_WIDTH;
         squeeze_video.width = video.width = mirror_video.width = VIDEO_WIDTH;
-        tunnel_video.width = fisheye_video.width = pullout_video.width = VIDEO_WIDTH;
+        tunnel_video.width = fisheye_video.width = strech_video.width = VIDEO_WIDTH;
         bulge_video.height = dent_video.height = twirl_video.height = VIDEO_HEIGHT;
         squeeze_video.height = video.height = mirror_video.height = VIDEO_HEIGHT;
-        tunnel_video.height = fisheye_video.height = pullout_video.height = VIDEO_HEIGHT;
+        tunnel_video.height = fisheye_video.height = strech_video.height = VIDEO_HEIGHT;
     }
 
     public function init():void
     {
       // setup camera
       if(connectCamera()) {
-      //debug
-      console = new Console();
         // Setup video
         setupVideo();
         video.attachCamera(camera); 
@@ -49,9 +45,14 @@
           var region:Rectangle = new Rectangle(30, 30, 90, 90);
           var bulgeFilter:DisplacementMapFilter = Filter.bulgeFilter(bmd, region);
           var twirlFilter:DisplacementMapFilter = Filter.twirlFilter(bmd, region);
-          var squeezeFilter:DisplacementMapFilter = Filter.squeezeFilter(bmd, region);
+          var squeezeFilter:DisplacementMapFilter = Filter.squeezeFilter(bmd);
           var pinchFilter:DisplacementMapFilter = Filter.pinchFilter(bmd, region);
-          //var filter:DisplacementMapFilter = twirlFiter(bmd, region);
+          var tunnelFilter:DisplacementMapFilter = Filter.photicTunnelFilter(bmd, region);
+          var fisheyeFilter:DisplacementMapFilter = Filter.fisheyeFilter(bmd);
+          var strechFilter:DisplacementMapFilter = Filter.strechFilter(bmd);
+
+          // TODO: Dent filter is not supported yet.
+          var dentFilter:DisplacementMapFilter = Filter.squeezeFilter(bmd, region, 0.3);
  
           return function():void {
             // original
@@ -73,13 +74,29 @@
             squeeze_video.addChild(new Bitmap(squeezeBmd));
 
             // pinch effect
-            var pinchBmd:BitmapData = new BitmapData(width, height, false);
-            pinchBmd.applyFilter(bmd, bmd.rect, new Point(0, 0), pinchFilter);
-            squeeze_video.addChild(new Bitmap(pinchBmd));
+            var tunnelBmd:BitmapData = new BitmapData(width, height, false);
+            tunnelBmd.applyFilter(bmd, bmd.rect, new Point(0, 0), tunnelFilter);
+            tunnel_video.addChild(new Bitmap(tunnelBmd));
 
-            // mirror effect. 
+            // mirror effect
             // NOTE: A little tricky because return BitmapData object directly.
             mirror_video.addChild(new Bitmap(Filter.mirror(bmd)));
+
+            // fisheye effect
+            var fisheyeBmd:BitmapData = new BitmapData(width, height, false);
+            fisheyeBmd.applyFilter(bmd, bmd.rect, new Point(0, 0), fisheyeFilter);
+            fisheye_video.addChild(new Bitmap(fisheyeBmd));
+
+            // strech effect
+            var strechBmd:BitmapData = new BitmapData(width, height, false);
+            strechBmd.applyFilter(bmd, bmd.rect, new Point(0, 0), strechFilter);
+            strech_video.addChild(new Bitmap(strechBmd));
+
+            // dent effect
+            // TODO: Dent effect is not supported yet
+            var dentBmd:BitmapData = new BitmapData(width, height, false);
+            dentBmd.applyFilter(bmd, bmd.rect, new Point(0, 0), dentFilter);
+            dent_video.addChild(new Bitmap(dentBmd));
           };
         })(), 1000 / fps);
       }
@@ -114,7 +131,7 @@
     }
   ]]></mx:Script>
   <mx:VBox>
-    <mx:Label text="AS3 Photo Booth. Some effects not implemented yet." fontSize="16"/>
+    <mx:Label text="AS3 Photo Booth." fontSize="16"/>
     <mx:HBox>
       <mx:VideoDisplay id="bulge_video"/>
       <mx:VideoDisplay id="dent_video"/>
@@ -128,7 +145,7 @@
     <mx:HBox>
       <mx:VideoDisplay id="tunnel_video"/>
       <mx:VideoDisplay id="fisheye_video"/>
-      <mx:VideoDisplay id="pullout_video"/>
+      <mx:VideoDisplay id="strech_video"/>
     </mx:HBox>
   </mx:VBox>
 </mx:Application>
