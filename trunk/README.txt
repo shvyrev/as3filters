@@ -6,6 +6,16 @@ as3filters
 The as3filters includes variety of filters for image processing.
 There are effects of Twirl, Squeeze, Pinch, Photic tunnel, Bulge and more.
 
+Effects:
+  * Twirl
+  * Pinch
+  * Fisheye
+  * Mirror
+  * Photic tunnel
+  * Bulge
+  * Squeeze
+  * Strech
+
 == USAGE
 
 e.g) You can apply filter is as follows:
@@ -23,5 +33,8 @@ See LICENSE.txt
 == Author
 Rakuto Furutani <http://raku.to/>
 
-== Developer
-Idea of filters, developers be wanted. 
+== Developers
+Developers be wanted. 
+
+== TODO
+* Sphere filter
