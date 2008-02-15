@@ -42,10 +42,10 @@
       <arg line="-compiler.include-libraries ${bin.dir}/as3filters.swc"/>
 
       <!-- Specify an output dir -->
-      <arg line="-o ${bin.dir}/filters_demo.swf"/>
+      <arg line="-o ${bin.dir}/photo_booth.swf"/>
 
       <!-- Target -->
-      <arg line="${example.dir}/filters_demo.mxml"/>
+      <arg line="${example.dir}/photo_booth.mxml"/>
     </exec>
   </target>
   
